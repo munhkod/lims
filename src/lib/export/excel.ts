@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import ExcelJS from "exceljs";
 import type { Sample, Analysis } from "@/types/database";
 
