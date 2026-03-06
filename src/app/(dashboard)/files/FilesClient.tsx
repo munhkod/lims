@@ -32,7 +32,7 @@ export function FilesClient({ profile, files: initial }: { profile: Profile; fil
     const path = `uploads/${profile.id}/${Date.now()}_${file.name}`;
     const { error: upErr } = await supabase.storage.from("lims-files").upload(path, file);
     if (upErr) { toast.error(upErr.message); setUploading(false); return; }
-    const { data, error } = await supabase.from("files").insert({
+    const { data, error } = await (supabase as any).from("files").insert({
       name: file.name,
       storage_path: path,
       mime_type: file.type,
