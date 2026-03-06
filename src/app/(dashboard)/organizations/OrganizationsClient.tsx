@@ -74,7 +74,7 @@ export function OrganizationsClient({ orgs: initial }: { orgs: Org[] }) {
   }
 
   async function handleDelete(org: Org) {
-    if (!confirm(`Delete "${org.name}"? This cannot be undone.`)) return;
+    if (!confirm(`Delete ${org.name}? This cannot be undone.`)) return;
     const supabase = createClient();
     const { error } = await (supabase as any).from("organizations").delete().eq("id", org.id);
     if (error) { toast.error(error.message); return; }
