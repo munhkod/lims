@@ -10,7 +10,7 @@ export default async function ResultsPage() {
   if (!user) redirect("/login");
 
   const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single();
-  if (!["admin", "lab_manager"].includes(profile?.role ?? "")) redirect("/dashboard");
+  if (!["admin", "lab_manager"].includes((profile as any)?.role ?? "")) redirect("/dashboard");
 
   const { data: analyses } = await supabase.from("analyses").select(`
     *, sample:samples(*, organization:organizations(name)),
