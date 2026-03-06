@@ -19,10 +19,10 @@ export default async function ReportsPage() {
   `).eq("status", "approved").order("approved_at", { ascending: false });
 
   // Clients only see their org's results
-  if (profile?.role === "client" && profile.org_id) {
-    query = query.eq("sample.org_id", profile.org_id);
+if ((profile as any)?.role === "client" && (profile as any)?.org_id) {
+    query = query.eq("sample.org_id", (profile as any).org_id);
   }
-
+  
   const { data: analyses } = await query;
   return <ReportsClient profile={profile!} analyses={analyses ?? []} />;
 }
