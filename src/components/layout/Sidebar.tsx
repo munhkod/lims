@@ -10,20 +10,21 @@ import { getInitials, ROLE_LABELS } from "@/lib/utils";
 import {
   LayoutDashboard, FlaskConical, Microscope, CheckSquare,
   FileText, FolderOpen, Cpu, Users, Settings, LogOut,
-  ChevronLeft, ChevronRight, Bell
+  ChevronLeft, ChevronRight, Building2
 } from "lucide-react";
 
 const NAV_ITEMS = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, permission: null },
-  { href: "/samples", label: "Samples", icon: FlaskConical, permission: "samples:read" },
-  { href: "/analysis", label: "Analysis", icon: Microscope, permission: "analyses:read" },
-  { href: "/results", label: "Review", icon: CheckSquare, permission: "results:approve" },
-  { href: "/reports", label: "Reports", icon: FileText, permission: "results:read" },
-  { href: "/files", label: "Files", icon: FolderOpen, permission: "files:read" },
-  { href: "/equipment", label: "Equipment", icon: Cpu, permission: "equipment:read" },
-  { href: "/users", label: "Users", icon: Users, permission: "users:read" },
-  { href: "/settings", label: "Settings", icon: Settings, permission: null },
-] as const;
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, permission: null, roles: null },
+  { href: "/organizations", label: "Organizations", icon: Building2, permission: null, roles: ["admin", "lab_manager"] },
+  { href: "/samples", label: "Samples", icon: FlaskConical, permission: "samples:read", roles: null },
+  { href: "/analysis", label: "Analysis", icon: Microscope, permission: "analyses:read", roles: null },
+  { href: "/results", label: "Review", icon: CheckSquare, permission: "results:approve", roles: null },
+  { href: "/reports", label: "Reports", icon: FileText, permission: "results:read", roles: null },
+  { href: "/files", label: "Files", icon: FolderOpen, permission: "files:read", roles: null },
+  { href: "/equipment", label: "Equipment", icon: Cpu, permission: "equipment:read", roles: null },
+  { href: "/users", label: "Users", icon: Users, permission: "users:read", roles: null },
+  { href: "/settings", label: "Settings", icon: Settings, permission: null, roles: null },
+];
 
 export function Sidebar({ profile }: { profile: Profile }) {
   const pathname = usePathname();
@@ -37,9 +38,11 @@ export function Sidebar({ profile }: { profile: Profile }) {
     router.refresh();
   }
 
-  const visible = NAV_ITEMS.filter(item =>
-    !item.permission || hasPermission(profile.role, item.permission as any)
-  );
+  const visible = NAV_ITEMS.filter(item => {
+    if (item.roles) return item.roles.includes(profile.role);
+    if (item.permission) return hasPermission(profile.role, item.permission as any);
+    return true;
+  });
 
   return (
     <aside className={`${collapsed ? "w-16" : "w-56"} flex-shrink-0 bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-200 h-screen sticky top-0`}>
@@ -82,7 +85,7 @@ export function Sidebar({ profile }: { profile: Profile }) {
               {getInitials(profile.name)}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-semibold text-foreground truncate">{profile.name.split(" ")[0]}</p>
+              <p className="text-xs font-semibold text-foreground truncate">{profile.name}</p>
               <p className="text-xs text-muted-foreground">{ROLE_LABELS[profile.role]}</p>
             </div>
             <button onClick={handleLogout} title="Sign out"
