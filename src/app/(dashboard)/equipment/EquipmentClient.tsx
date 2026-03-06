@@ -19,7 +19,7 @@ export function EquipmentClient({ profile, equipment: initial }: { profile: Prof
     e.preventDefault();
     setSaving(true);
     const supabase = createClient();
-    const { data, error } = await supabase.from("equipment").insert({ ...form, status: "active" }).select().single();
+    const { data, error } = await (supabase as any).from("equipment").insert({ ...form, status: "active" }).select().single();
     if (error) toast.error(error.message);
     else { setEquipment(p => [data, ...p]); toast.success("Equipment added"); setShowAdd(false); setForm({ name: "", code: "", equipment_type: "", manufacturer: "", model: "", serial_number: "" }); }
     setSaving(false);
@@ -27,7 +27,7 @@ export function EquipmentClient({ profile, equipment: initial }: { profile: Prof
 
   async function updateStatus(id: string, status: Equipment["status"]) {
     const supabase = createClient();
-    await supabase.from("equipment").update({ status }).eq("id", id);
+    await (supabase as any).from("equipment").update({ status }).eq("id", id);
     setEquipment(p => p.map(e => e.id === id ? { ...e, status } : e));
     toast.success(`Equipment status updated to ${status}`);
   }
