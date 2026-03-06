@@ -18,7 +18,7 @@ export default async function AnalysisPage() {
     result:results(*)
   `).order("created_at", { ascending: false });
 
-  if (profile?.role === "analyst") query = query.eq("analyst_id", user.id);
+  if ((profile as any)?.role === "analyst") query = query.eq("analyst_id", user.id);
 
   const [{ data: analyses }, { data: equipment }] = await Promise.all([
     query,
