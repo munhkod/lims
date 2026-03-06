@@ -1,36 +1,117 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LIMS — Laboratory Information Management System
+### Digital Medic LLC · ISO 17025 Compliant · Next.js 14 + Supabase
 
-## Getting Started
+---
 
-First, run the development server:
+## Quick Start
 
 ```bash
+# 1. Clone and install
+git clone https://github.com/yourorg/lims.git
+cd lims
+npm install
+
+# 2. Configure environment
+cp .env.example .env.local
+# Fill in NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, etc.
+
+# 3. Setup database
+# Go to Supabase Dashboard → SQL Editor
+# Paste and run: supabase/schema.sql
+
+# 4. Create storage bucket
+# Supabase Dashboard → Storage → New bucket: "lims-files" (private)
+
+# 5. Seed demo data
+npm run seed
+
+# 6. Start dev server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Demo Accounts (after seeding)
 
-## Learn More
+| Role | Email | Password |
+|------|-------|----------|
+| Admin | admin@lims.mn | password123 |
+| Lab Manager | manager@lims.mn | password123 |
+| Analyst | analyst1@lims.mn | password123 |
+| Client | client@mf.mn | password123 |
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Tech Stack
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Frontend**: Next.js 14 (App Router), TypeScript, TailwindCSS, Recharts
+- **Backend**: Supabase (PostgreSQL + Auth + Storage)
+- **Email**: Resend
+- **PDF**: jsPDF + jspdf-autotable
+- **Excel**: ExcelJS
+- **Validation**: Zod
+- **Deployment**: Vercel + Supabase
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Project Structure
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+src/
+├── app/
+│   ├── (auth)/login/          # Login page
+│   ├── (dashboard)/           # Protected dashboard pages
+│   │   ├── dashboard/         # Analytics & overview
+│   │   ├── samples/           # Sample management
+│   │   ├── analysis/          # Analyst workspace
+│   │   ├── results/           # Review & approval
+│   │   ├── reports/           # Final results / CoA
+│   │   ├── files/             # File archive
+│   │   ├── equipment/         # Equipment log
+│   │   ├── users/             # User management
+│   │   └── settings/          # System settings
+│   └── api/
+│       ├── samples/           # REST API
+│       ├── analyses/          # With approve/reject
+│       └── export/            # PDF & Excel
+├── components/
+│   ├── layout/                # Sidebar, Topbar
+│   └── shared/                # DataTable, StatusBadge, StatCard
+├── hooks/                     # useAuth, useSamples, useAnalyses
+├── lib/
+│   ├── supabase/              # Client, Server, Middleware
+│   ├── auth/                  # RBAC permissions
+│   ├── email/                 # Resend templates
+│   └── export/                # PDF & Excel generators
+└── types/                     # TypeScript types
+```
+
+---
+
+## Deploy to Vercel
+
+```bash
+npm i -g vercel
+vercel deploy --prod
+```
+
+Set environment variables in Vercel Dashboard → Project → Settings → Environment Variables.
+
+---
+
+## Roles & Permissions
+
+| Feature | Admin | Lab Manager | Analyst | Client |
+|---------|-------|-------------|---------|--------|
+| Register Sample | ✅ | ✅ | ✅ | ❌ |
+| Assign Analyst | ✅ | ✅ | ❌ | ❌ |
+| Enter Results | ✅ | ✅ | ✅ | ❌ |
+| Approve Results | ✅ | ✅ | ❌ | ❌ |
+| View Reports | ✅ | ✅ | ✅ | ✅ (own) |
+| Manage Users | ✅ | view | ❌ | ❌ |
+
+---
+
+*Digital Medic LLC · Сүхбаатар дүүрэг, Улаанбаатар · info@digitalmedic.mn*
