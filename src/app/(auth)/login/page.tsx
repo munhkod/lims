@@ -67,25 +67,7 @@ export default function LoginPage() {
               {loading ? "Signing in…" : "Sign In →"}
             </button>
           </form>
-
-          <div className="mt-5 pt-5 border-t border-border">
-            <p className="text-xs text-muted-foreground/60 uppercase tracking-wider mb-3">Demo Accounts</p>
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              {[
-                ["Admin", "admin@lims.mn"],
-                ["Lab Manager", "manager@lims.mn"],
-                ["Analyst", "analyst1@lims.mn"],
-                ["Client", "client@mf.mn"],
-              ].map(([role, em]) => (
-                <button key={role} onClick={() => { setEmail(em); setPassword("password123"); }}
-                  className="text-left px-3 py-2 rounded-lg bg-muted hover:bg-muted/80 transition-colors">
-                  <p className="font-semibold text-foreground">{role}</p>
-                  <p className="text-muted-foreground truncate">{em}</p>
-                </button>
-              ))}
-            </div>
-            <p className="text-xs text-muted-foreground/50 mt-2">Password: <code className="text-muted-foreground">password123</code></p>
-          </div>
+          
         </div>
       </div>
     </main>
