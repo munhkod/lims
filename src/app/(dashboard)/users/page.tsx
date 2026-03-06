@@ -10,8 +10,8 @@ export default async function UsersPage() {
   if (!user) redirect("/login");
 
   const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single();
-  if (!["admin", "lab_manager"].includes(profile?.role ?? "")) redirect("/dashboard");
-
+  if (!["admin"].includes((profile as any)?.role ?? "")) redirect("/dashboard");
+  
   const [{ data: users }, { data: orgs }] = await Promise.all([
     supabase.from("profiles").select("*, organization:organizations(name)").order("created_at", { ascending: false }),
     supabase.from("organizations").select("id, name").order("name"),

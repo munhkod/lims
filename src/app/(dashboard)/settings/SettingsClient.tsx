@@ -26,7 +26,7 @@ export function SettingsClient({ profile }: { profile: Profile }) {
     e.preventDefault();
     setSaving(true);
     const supabase = createClient();
-    const { error } = await supabase.from("profiles").update({ name, phone }).eq("id", profile.id);
+    const { error } = await (supabase as any).from("profiles").update({ name, phone })
     if (error) toast.error(error.message);
     else toast.success("Profile updated");
     setSaving(false);

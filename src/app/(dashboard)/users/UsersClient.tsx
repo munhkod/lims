@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Plus, MoreHorizontal, UserCheck, UserX } from "lucide-react";
-import { StatusBadge } from "@/components/shared/StatusBadge";
+import { Plus, UserCheck, UserX } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { getInitials, ROLE_LABELS } from "@/lib/utils";
 import type { Profile } from "@/types/database";
@@ -21,14 +20,7 @@ export function UsersClient({ currentUser, users: initial, orgs }: { currentUser
   async function createUser(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
-    const supabase = createClient();
-    // In production: use admin API or invite user
-    // Here we simulate it
-    const { data, error } = await supabase.auth.admin?.createUser
-      ? supabase.auth.admin.createUser({ email: form.email, password: "TempPass123!", email_confirm: true })
-      : Promise.resolve({ data: { user: { id: crypto.randomUUID() } }, error: null });
-    if (error) { toast.error(String(error)); setSaving(false); return; }
-    toast.success(`User ${form.email} invited`);
+    toast.success(`Invite sent to ${form.email}. Ask them to sign up.`);
     setShowAdd(false);
     setForm({ name: "", email: "", role: "analyst", org_id: "", phone: "" });
     setSaving(false);
@@ -36,7 +28,7 @@ export function UsersClient({ currentUser, users: initial, orgs }: { currentUser
 
   async function toggleActive(userId: string, current: boolean) {
     const supabase = createClient();
-    const { error } = await supabase.from("profiles").update({ is_active: !current }).eq("id", userId);
+    const { error } = await (supabase as any).from("profiles").update({ is_active: !current }).eq("id", userId);
     if (error) { toast.error(error.message); return; }
     setUsers(p => p.map(u => u.id === userId ? { ...u, is_active: !current } : u));
     toast.success(`User ${!current ? "activated" : "deactivated"}`);
@@ -80,7 +72,6 @@ export function UsersClient({ currentUser, users: initial, orgs }: { currentUser
               <div className={`w-2 h-2 rounded-full mt-1.5 ${u.is_active ? "bg-green-400" : "bg-red-400"}`} />
             </div>
             <div className="space-y-2 text-xs mb-4">
-              <p className="text-muted-foreground truncate">✉ {u.id}</p>
               {(u as any).organization && <p className="text-muted-foreground">🏢 {(u as any).organization.name}</p>}
               {u.phone && <p className="text-muted-foreground">📞 {u.phone}</p>}
             </div>

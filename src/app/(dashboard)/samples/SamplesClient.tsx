@@ -44,7 +44,7 @@ export function SamplesClient({ profile, samples: initialSamples, analysts, orgs
 
   async function handleAssign(sampleId: string, analystId: string) {
     const supabase = createClient();
-    const { error } = await supabase.from("samples").update({ assigned_analyst: analystId, status: "in_progress" }).eq("id", sampleId);
+    const { error } = await (supabase as any).from("samples").update({ assigned_analyst: analystId, status: "in_progress" }).eq("id", sampleId);
     if (error) toast.error(error.message);
     else { toast.success("Analyst assigned"); setShowDetail(null); }
   }
