@@ -1,58 +1,95 @@
 # LIMS — Laboratory Information Management System
-### Digital Medic LLC · ISO 17025 Compliant · Next.js 14 + Supabase
+
+> ISO 17025 compliant laboratory management platform built for Digital Medic LLC, Ulaanbaatar, Mongolia.
 
 ---
 
-## Quick Start
+## Overview
 
-```bash
-# 1. Clone and install
-git clone https://github.com/yourorg/lims.git
-cd lims
-npm install
-
-# 2. Configure environment
-cp .env.example .env.local
-# Fill in NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, etc.
-
-# 3. Setup database
-# Go to Supabase Dashboard → SQL Editor
-# Paste and run: supabase/schema.sql
-
-# 4. Create storage bucket
-# Supabase Dashboard → Storage → New bucket: "lims-files" (private)
-
-# 5. Seed demo data
-npm run seed
-
-# 6. Start dev server
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000)
-
----
-
-## Demo Accounts (after seeding)
-
-| Role | Email | Password |
-|------|-------|----------|
-| Admin | admin@lims.mn | password123 |
-| Lab Manager | manager@lims.mn | password123 |
-| Analyst | analyst1@lims.mn | password123 |
-| Client | client@mf.mn | password123 |
+LIMS is a full-stack web application for managing laboratory sample workflows from registration through analysis, review, approval, and client delivery. It supports multiple user roles, real-time dashboards, PDF/Excel exports, and bilingual (Mongolian/English) notifications.
 
 ---
 
 ## Tech Stack
 
-- **Frontend**: Next.js 14 (App Router), TypeScript, TailwindCSS, Recharts
-- **Backend**: Supabase (PostgreSQL + Auth + Storage)
-- **Email**: Resend
-- **PDF**: jsPDF + jspdf-autotable
-- **Excel**: ExcelJS
-- **Validation**: Zod
-- **Deployment**: Vercel + Supabase
+| Layer | Technology |
+|---|---|
+| Framework | Next.js 14 (App Router) |
+| Language | TypeScript |
+| Styling | TailwindCSS |
+| Database | Supabase (PostgreSQL) |
+| Authentication | Supabase Auth |
+| File Storage | Supabase Storage |
+| Email | Resend |
+| PDF Export | jsPDF + jsPDF-AutoTable |
+| Excel Export | ExcelJS |
+| Charts | Recharts |
+| Icons | Lucide React |
+| Toast Notifications | Sonner |
+| Deployment | Vercel |
+
+---
+
+## Features
+
+### Sample Management
+- Register samples with organization, sample type, analysis type, priority, and notes
+- Auto-generate sample IDs (format: `YY-NNNN`)
+- Assign analysts to samples
+- Track status: `pending → in_progress → completed → approved / rejected`
+
+### Analysis Module
+- Analysts enter test results per parameter (value, unit, standard, compliance)
+- Track equipment used per analysis
+- Submit completed analyses for manager review
+
+### Result Review
+- Lab managers approve or reject completed analyses
+- Rejection returns sample to analyst with reason
+- Approval triggers email notification to client
+
+### Reports & Export
+- View all approved results
+- Export Certificate of Analysis as PDF
+- Export bulk data as Excel spreadsheet
+- Clients only see their own organization's reports
+
+### Organizations
+- Add, edit, and delete client organizations
+- Track contact person, email, phone, and address
+
+### File Archive
+- Upload files to Supabase Storage
+- Download via secure signed URLs
+- Filter by file type (document, report, certificate, image)
+
+### Equipment Log
+- Register laboratory instruments
+- Track calibration dates
+- Update equipment status (active, maintenance, retired)
+
+### User Management
+- Admin can create and manage user accounts
+- Assign roles and organizations
+- Activate or deactivate accounts
+
+### Dashboard
+- Real-time stats: total samples, approved, pending, in progress, rejected
+- Monthly sample volume bar chart (live data)
+- Status distribution pie chart
+- Recent samples list
+- Activity feed from audit logs
+
+---
+
+## User Roles
+
+| Role | Access |
+|---|---|
+| **Admin** | Full access — all pages, user management, system settings |
+| **Lab Manager** | Approve/reject analyses, manage equipment, view all samples |
+| **Analyst** | Enter analysis results for assigned samples |
+| **Client** | View only their organization's approved reports |
 
 ---
 
@@ -62,56 +99,137 @@ Open [http://localhost:3000](http://localhost:3000)
 src/
 ├── app/
 │   ├── (auth)/login/          # Login page
-│   ├── (dashboard)/           # Protected dashboard pages
-│   │   ├── dashboard/         # Analytics & overview
-│   │   ├── samples/           # Sample management
-│   │   ├── analysis/          # Analyst workspace
-│   │   ├── results/           # Review & approval
-│   │   ├── reports/           # Final results / CoA
-│   │   ├── files/             # File archive
-│   │   ├── equipment/         # Equipment log
-│   │   ├── users/             # User management
-│   │   └── settings/          # System settings
-│   └── api/
-│       ├── samples/           # REST API
-│       ├── analyses/          # With approve/reject
-│       └── export/            # PDF & Excel
+│   └── (dashboard)/           # Protected dashboard routes
+│       ├── dashboard/         # Overview & charts
+│       ├── samples/           # Sample registration & management
+│       ├── analysis/          # Analyst workspace
+│       ├── results/           # Manager approval interface
+│       ├── reports/           # Approved reports & export
+│       ├── files/             # File archive
+│       ├── equipment/         # Equipment tracking
+│       ├── organizations/     # Client organizations
+│       ├── users/             # User management
+│       └── settings/          # Profile settings
 ├── components/
-│   ├── layout/                # Sidebar, Topbar
-│   └── shared/                # DataTable, StatusBadge, StatCard
+│   ├── layout/                # Sidebar, Topbar, DashboardLayout
+│   └── shared/                # DataTable, StatusBadge, StatCard, FileUpload
 ├── hooks/                     # useAuth, useSamples, useAnalyses
 ├── lib/
-│   ├── supabase/              # Client, Server, Middleware
-│   ├── auth/                  # RBAC permissions
-│   ├── email/                 # Resend templates
-│   └── export/                # PDF & Excel generators
-└── types/                     # TypeScript types
+│   ├── supabase/              # Client, server, middleware
+│   ├── auth/                  # Role-based permissions
+│   ├── email/                 # Resend notification templates
+│   └── export/                # PDF and Excel generators
+└── types/                     # TypeScript database types
 ```
 
 ---
 
-## Deploy to Vercel
+## Getting Started
 
+### Prerequisites
+- Node.js v18 or higher
+- Supabase account
+- Resend account (for email notifications)
+- Vercel account (for deployment)
+
+### Local Development
+
+**1. Clone the repository**
 ```bash
-npm i -g vercel
-vercel deploy --prod
+git clone https://github.com/your-username/lims.git
+cd lims
 ```
 
-Set environment variables in Vercel Dashboard → Project → Settings → Environment Variables.
+**2. Install dependencies**
+```bash
+npm install
+```
+
+**3. Set up environment variables**
+
+Create a `.env.local` file in the root:
+```
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+RESEND_API_KEY=your-resend-api-key
+EMAIL_FROM=noreply@yourdomain.com
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
+
+**4. Set up the database**
+
+- Go to Supabase → SQL Editor
+- Run the contents of `supabase/schema.sql`
+
+**5. Create storage bucket**
+
+- Go to Supabase → Storage
+- Create a private bucket named `lims-files`
+
+**6. Create your first admin user**
+
+- Go to Supabase → Authentication → Add user
+- Create user with email and password, check Auto Confirm
+- Copy the User UID and run in SQL Editor:
+
+```sql
+INSERT INTO profiles (id, name, role, is_active)
+VALUES ('your-user-uid', 'Your Name', 'admin', true);
+```
+
+**7. Start the development server**
+```bash
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000)
 
 ---
 
-## Roles & Permissions
+## Deployment (Vercel)
 
-| Feature | Admin | Lab Manager | Analyst | Client |
-|---------|-------|-------------|---------|--------|
-| Register Sample | ✅ | ✅ | ✅ | ❌ |
-| Assign Analyst | ✅ | ✅ | ❌ | ❌ |
-| Enter Results | ✅ | ✅ | ✅ | ❌ |
-| Approve Results | ✅ | ✅ | ❌ | ❌ |
-| View Reports | ✅ | ✅ | ✅ | ✅ (own) |
-| Manage Users | ✅ | view | ❌ | ❌ |
+**1.** Push your code to GitHub
+
+**2.** Connect your GitHub repo to Vercel
+
+**3.** Add environment variables in Vercel dashboard (same as `.env.local`)
+
+**4.** Deploy — Vercel builds and deploys automatically on every push to `main`
 
 ---
 
-*Digital Medic LLC · Сүхбаатар дүүрэг, Улаанбаатар · info@digitalmedic.mn*
+## Database Schema
+
+The database consists of 9 tables:
+
+| Table | Description |
+|---|---|
+| `organizations` | Client companies and labs |
+| `profiles` | User profiles extending Supabase auth |
+| `equipment` | Laboratory instruments |
+| `samples` | Registered test samples |
+| `analyses` | Analysis sessions per sample |
+| `results` | Individual test results per analysis |
+| `files` | Uploaded documents and reports |
+| `audit_logs` | System activity trail |
+| `notifications` | User notifications |
+
+---
+
+## Environment Variables
+
+| Variable | Description |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous/public key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key (server only) |
+| `RESEND_API_KEY` | Resend API key for email |
+| `EMAIL_FROM` | Sender email address |
+| `NEXT_PUBLIC_APP_URL` | App URL (e.g. https://lims.vercel.app) |
+
+---
+
+## License
+
+Private — Digital Medic LLC. All rights reserved.
